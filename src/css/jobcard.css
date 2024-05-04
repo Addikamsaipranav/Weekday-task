@@ -1,0 +1,111 @@
+* {
+  font-size: 14px;
+  font-family: sans-serif;
+}
+
+.bold-text, .bold-text1 {
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.bold-text1 {
+  color: rgba(0, 0, 0, 0.9);
+}
+.job-card {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  padding: 20px;
+  height: 100%; /* Set card height to 1000px */
+  box-sizing: border-box; /* Include padding in the card's width and height */
+  border: 1px solid ghostwhite; /* Set border to 2px */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+.job-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px); /* Move the card 5px up on hover */
+}
+.job-card:not(:last-child) {
+  margin-right: 20px;
+}
+
+.top-row {
+  display: flex;
+}
+
+.company-photo {
+  width: 25px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.location,
+.estimated-salary,
+.about-company-heading,
+.min-experience-heading {
+  margin-top: 10px;
+}
+
+.button-row {
+  margin-top: 10px;
+}
+
+.show-more-toggle {
+  cursor: pointer;
+  color: blue;
+}
+
+.job-listings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-left: 90px;
+  margin-right: 90px;
+  margin-top: 60px;
+  box-sizing: border-box;
+}
+
+.blurry-text1 {
+  opacity: 0.8;
+}
+
+.blurry-text2 {
+  opacity: 0.5;
+}
+
+.blurry-text3 {
+  opacity: 0.2;
+}
+
+.view-job {
+  text-align: center;
+  margin-top: -10px;
+  color: blue;
+  cursor: pointer;
+}
+
+.minimum-experience {
+  font-weight: bold;
+  font-size: medium;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.custom-button {
+  margin-top: 10px;
+  width: 100%;
+  background-color: rgb(85, 239, 196);
+  color: rgb(0, 0, 0);
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 0px solid ghostwhite;
+}
+
+/* Add media query for mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .job-card {
+    width: calc(50% - 20px);
+  }
+}
