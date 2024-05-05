@@ -8,15 +8,10 @@ const JobCard = ({ companyName, companyPhoto, jobTitle, location, estimatedSalar
         setShowMore(!showMore);
     };
 
-    // Function to capitalize the first letter of a Company name , job title strings
+    // Function to capitalize the first letter of a string
     const capitalizeFirstLetter = (str) => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     };
-    /* Written this logic to get that blurry effect in the about company string ,
-     The logic is all about getting first 40% charcters , and then next 15%charcters and then next 10% characters
-     For first 40% charcters i kept opacity as 0.9 , for subsequenct characters i kept 0.6 and 0.4 as opacity so that 
-     we can achieve that blurry effect in UI .
-    */
 
     // Function to calculate the percentage of characters to display in the aboutCompany section
     const calculateDivContent = () => {
@@ -38,7 +33,7 @@ const JobCard = ({ companyName, companyPhoto, jobTitle, location, estimatedSalar
 
     return (
         <div className="job-card">
-            <div className="company-details">
+            <div className="top-row">
                 <img src={companyPhoto} alt="Company Logo" className="company-photo" />
                 <div className="company-details">
                     <div className="company-name">{capitalizeFirstLetter(companyName)}</div>

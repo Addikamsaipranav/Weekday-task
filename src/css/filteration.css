@@ -1,4 +1,5 @@
 
+
 .dropdown-container select {
   margin-left: 70px;
   margin-top: 30px;
@@ -17,4 +18,3 @@
 .dropdown-container select option {
   background-color: rgba(255, 255, 255, 0.6); /* Set background opacity for options */
 }
-
