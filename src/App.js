@@ -7,7 +7,7 @@ import JobsRender from "./components/Jobs-render";
 const App=()=>{
   return <div>
     
-<Filteration/>
+
 <JobsRender/>
   </div>
 }
