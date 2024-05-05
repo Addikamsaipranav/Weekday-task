@@ -1,8 +1,10 @@
-
+.dropdown-container {
+  margin-left: 90px;
+}
 
 .dropdown-container select {
   background-color: black;
-  margin-left: 70px;
+  margin-left: 10px;
   margin-top: 30px;
   font-size: 16px;
   width: inherit; /* Increase the width of the dropdown */
@@ -14,7 +16,20 @@
   color: #333; /* Set text color */
   outline: none; /* Remove outline */
   cursor: pointer; /* Set cursor to pointer */
-  transition: border-color 0.1s;
+}
+
+.dropdown-container select optgroup {
+  opacity: 0.8; /* Set opacity for optgroup */
+}
+
+.dropdown-container select option {
+  opacity: 0.1; /* Set opacity for options */
+ 
+ 
+}
+
+.dropdown-container select option:first-child {
+  padding-top: 0; /* Remove top padding for the first option */
 }
 
 .dropdown-container select option {
@@ -22,5 +37,5 @@
 }
 
 .dropdown-container select:hover {
-  border: 1.5px solid blue; /* Add border when hovering over the container */
+  border: 2px solid blue; /* Add border when hovering over the container */
 }

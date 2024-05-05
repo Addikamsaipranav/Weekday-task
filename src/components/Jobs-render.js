@@ -7,7 +7,7 @@ const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
 const initialOffset = 0;
-let limit = 1000;
+let limit = 10;
 
 const JobPortal = () => {
     const [jobListings, setJobListings] = useState([]);
@@ -16,13 +16,13 @@ const JobPortal = () => {
     const [experience, setExperience] = useState("0");
     const [jobTypes, setJobTypes] = useState("");
     const [minSalary, setMinSalary] = useState("0"); // State for selected minimum base pay salary
+    const [selectedRole, setSelectedRole] = useState(""); // State for selected role
 
     useEffect(() => {
         fetchData({ limit, offset });
     }, []);
 
     const fetchData = (params) => {
-        console.log(params)
         // Constructing the body of the request
         const body = JSON.stringify(params);
 
@@ -44,9 +44,6 @@ const JobPortal = () => {
 
                 // Updating offset
                 setOffset(prevOffset => prevOffset + result.jdList.length);
-
-                // Updating limit based on experience
-                // limit = parseInt(params.experience) > 0 ? 120 : 12;
 
                 // Filtering jobs based on parameters
                 let filteredJobs = result.jdList.filter(job => {
@@ -74,8 +71,14 @@ const JobPortal = () => {
                         return minSalary >= jobMinSalary && minSalary <= jobMaxSalary || minSalary <= jobMinSalary && minSalary >= jobMaxSalary;
                     }
                     return true; // Return true for other cases
+                }).filter(job => {
+                    // Filtering based on selected role
+                    if (params.selectedRole) {
+                        return job.jobRole === params.selectedRole;
+                    }
+                    return true; // Return true for other cases
                 });
-                console.log(jobListings)
+
                 // Updating job listings
                 setJobListings(prevListings => [...prevListings, ...filteredJobs]);
             })
@@ -87,7 +90,7 @@ const JobPortal = () => {
         setExperience(selectedExperience);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience: selectedExperience, jobTypes, minSalary, limit, offset: initialOffset });
+        fetchData({ experience: selectedExperience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole });
     };
 
     const handleJobTypeChange = (event) => {
@@ -95,7 +98,7 @@ const JobPortal = () => {
         setJobTypes(selectedType);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience, jobTypes: selectedType, minSalary, limit, offset: initialOffset });
+        fetchData({ experience, jobTypes: selectedType, minSalary, limit, offset: initialOffset, selectedRole });
     };
 
     const handleMinSalaryChange = (event) => {
@@ -103,13 +106,21 @@ const JobPortal = () => {
         setMinSalary(selectedMinSalary);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary: selectedMinSalary, limit, offset: initialOffset });
+        fetchData({ experience, jobTypes, minSalary: selectedMinSalary, limit, offset: initialOffset, selectedRole });
+    };
+
+    const handleRoleChange = (event) => {
+        const selectedRole = event.target.value;
+        setSelectedRole(selectedRole);
+        setOffset(initialOffset);
+        setJobListings([]);
+        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole });
     };
 
     const handleScroll = () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             setOffset(prevOffset => prevOffset + jobListings.length);
-            fetchData({ experience: parseInt(experience), jobTypes, minSalary, limit, offset });
+            fetchData({ experience: parseInt(experience), jobTypes, minSalary, limit, offset, selectedRole });
         }
     };
 
@@ -123,6 +134,61 @@ const JobPortal = () => {
     return (
         <div>
             <div className="dropdown-container">
+            <select value={selectedRole} onChange={handleRoleChange}>
+                    <option value="">Select Role</option>
+                    <optgroup label="ENGINEERING">
+                        <option value="backend">Backend</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="tech lead">Tech Lead</option>
+                        <option value="android">Android</option>
+                        <option value="ios">IOS</option>
+                        <option value="dev-ops">Dev-Ops</option>
+                        <option value="data engineer">Data Engineer</option>
+                        <option value="computer vision">Computer vision</option>
+                        <option value="nlp">Nlp</option>
+                        <option value="deep learning">Deep-Leaning</option>
+                        <option value="test/qa">Test/Qa</option>
+                        <option value="web3">web3</option>
+                        <option value="sre">Sre</option>
+                        <option value="dat infrastructure">Data Infrastructure</option>
+                        
+                    </optgroup>
+                    <optgroup label="DESIGN">
+                        <option value="designer">Designer</option>
+                        <option value="designmanager">Design Manager</option>
+                        <option value="graphicdesigner">Graphic Designer</option>
+                        <option value="productdesigner">Product Designer</option>
+                    </optgroup>
+                    <optgroup label="PRODUCT">
+                        <option value="product manager">Product Manager </option>
+                        
+                    </optgroup>
+                    <optgroup label="OPERATIONS">
+                        <option value="operations manager">Operations Manager </option>
+                        <option value="founders office/cheif of staff">Founder's Office / Cheif Staff </option>
+                    </optgroup>
+                    <optgroup label="Sales">
+                        <option value="salesdevelopmentrepresentative">Sales Development Representative</option>
+                        <option value="accountexecutive">Account Executive</option>
+                        <option value="accountmanager">Account Manager</option>
+                    </optgroup>
+                    <optgroup label="Marketing">
+                        <option value="digitalmarketing">Digital Marketing</option>
+                        <option value="growthhacker">Growth Hacker</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="productmarketingmanager">Product Marketing Manager</option>
+                    </optgroup>
+                    <optgroup label="Other Engineering">
+                        <option value="hardware">Hardware</option>
+                        <option value="mechanical">Mechanical</option>
+                        <option value="systems">Systems</option>
+                    </optgroup>
+                    <optgroup label="Business Analyst">
+                        <option value="businessanalyst">Business Analyst</option>
+                    </optgroup>
+                    
+                                    
+                </select>
                 <select value={experience} onChange={handleExperienceChange}>
                     <option value="0">Experience</option>
                     {[...Array(10)].map((_, i) => (
@@ -141,7 +207,7 @@ const JobPortal = () => {
                         <option key={i} value={i * 10}>${i * 10}</option>
                     ))}
                 </select>
-
+               
             </div>
 
             <div id="jobListings" className="job-listings">
@@ -161,6 +227,7 @@ const JobPortal = () => {
                 ))}
             </div>
             {jobListings.length < totalCount && <div>Loading...</div>}
+            {jobListings.length === 0 && <div>No jobs found.</div>}
         </div>
     );
 }
