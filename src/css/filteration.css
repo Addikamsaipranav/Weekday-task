@@ -1,7 +1,9 @@
 .dropdown-container {
   margin-left: 90px;
 }
-
+.error-text{
+  margin-left: 100px;
+}
 .dropdown-container select,input {
   background-color: black;
   margin-left: 10px;
