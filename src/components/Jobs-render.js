@@ -13,19 +13,16 @@ const JobPortal = () => {
     const [jobListings, setJobListings] = useState([]);
     const [offset, setOffset] = useState(initialOffset);
     const [totalCount, setTotalCount] = useState(0);
-    const [minExp, setExperience] = useState("0");
-    const [jobTypes, setJobTypes] = useState([]);
+    const [experience, setExperience] = useState("0");
+    const [jobTypes, setJobTypes] = useState(""); // State for selected job types
 
     useEffect(() => {
         fetchData({ limit, offset });
     }, []); 
 
     const fetchData = (params) => {
-        console.log(jobListings)
-        const body = JSON.stringify({
-            "limit": 10,
-             "offset": 0
-        });
+        
+        const body = JSON.stringify(params);
 
         const requestOptions = {
             method: "POST",
@@ -42,24 +39,64 @@ const JobPortal = () => {
             
                 setOffset(prevOffset => prevOffset + result.jdList.length);
                 
-
-                if (parseInt(params.minExp) > 0) {
-                    limit = 20; 
+                if (parseInt(params.experience) > 0) {
+                    limit = 72; 
                 } else {
-                    limit = 10; 
+                    limit = 12; 
+                }
+                let count = 0;
+                let filteredJobs = [];
+
+                for (let key in params) {
+                    const value = params[key];
+                    
+                    if (filteredJobs.length !== 0) {
+                        jdList = filteredJobs; // Set jdList to filteredJobs if it's not empty
+                    } else {
+                        jdList = result.jdList; // Otherwise, set it to result.jdList
+                    }
+
+                    if (key === "experience" && parseInt(value) > 0) {
+                        
+                        filteredJobs = jdList.filter(job => parseInt(job.minExp) <= parseInt(value));
+                        count += filteredJobs.length;
+                    }
+
+                    if (key == "jobTypes" && value !== "" && value !== '0') {
+                        filteredJobs = [];
+                        jdList.forEach(job => {
+                            if (value == 'In-Office') {
+                        if (job.location !== "hybrid" && job.location !== "remote") {
+                            filteredJobs.push(job);
+                        }
+                        }
+                            if(value=="hybrid" || value=="remote"){
+                               
+                                if (job.location === value) {
+                                    filteredJobs.push(job);
+                                }
+                            }
+                        });
+                        count ++;
+                    }
+
                 }
 
-                console.log(params)
-                if (parseInt(params.minExp) > 0)  {
-                    const filteredJobs = result.jdList.filter(job => {
-                        return parseInt(job.minExp) <= parseInt(params.minExp);
-                    });
-                    setJobListings(prevListings => [...prevListings, ...filteredJobs]);
-                } else {
+                if (count === 0) {
                     setJobListings(prevListings => [...prevListings, ...result.jdList]);
+                } else {
+                    setJobListings(prevListings => [...prevListings, ...filteredJobs]);
                 }
 
-            
+                // if (parseInt(params.experience) > 0) {
+                //     const filteredJobs = result.jdList.filter(job => {
+                //         return parseInt(job.minExp) <= parseInt(params.experience) ;
+                //     });
+                //     setJobListings(prevListings => [...prevListings, ...filteredJobs]);
+                // }
+                // else {
+                //     setJobListings(prevListings => [...prevListings, ...result.jdList]);
+                // }
             })
             .catch((error) => console.error(error));
     };
@@ -69,21 +106,21 @@ const JobPortal = () => {
         setExperience(selectedExperience);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ minExp: selectedExperience, limit, offset: initialOffset });
+        fetchData({ experience: selectedExperience, jobTypes, limit, offset: initialOffset });
     };
 
     const handleJobTypeChange = (event) => {
-        const selectedTypes = Array.from(event.target.selectedOptions, option => option.value);
-        setJobTypes(selectedTypes);
+        const selectedType = event.target.value;
+        setJobTypes(selectedType);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ minExp, jobTypes: selectedTypes, limit, offset: initialOffset });
+        fetchData({ experience, jobTypes: selectedType, limit, offset: initialOffset });
     };
 
     const handleScroll = () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             setOffset(prevOffset => prevOffset + jobListings.length); 
-            fetchData({ minExp: parseInt(minExp), jobTypes, limit, offset });
+            fetchData({ experience: parseInt(experience), jobTypes, limit, offset });
         }
     };
     
@@ -98,17 +135,17 @@ const JobPortal = () => {
     return (
         <div>
             <div className="dropdown-container">
-                <select value={minExp} onChange={handleExperienceChange}>
-                    <option value="0">Select Experience</option>
+                <select value={experience} onChange={handleExperienceChange}>
+                    <option value="0">Experience</option>
                     {[...Array(10)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>{i + 1} years</option>
                     ))}
                 </select>
                 <select value={jobTypes} onChange={handleJobTypeChange}>
-                <option value="0">Job-Type</option>
+                    <option value="0">Select Job Type</option>
                     <option value="remote">Remote</option>
                     <option value="hybrid">Hybrid</option>
-                    <option value="onsite">Onsite</option>
+                    <option value="In-Office">In-Office</option>
                 </select>
             </div>
 
