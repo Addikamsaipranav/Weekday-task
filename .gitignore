@@ -6,3 +6,4 @@ node_modules/
 
 # Ignore dist directory
 dist/
+.parcel-cache/data.mdb
