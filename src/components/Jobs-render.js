@@ -17,6 +17,7 @@ const JobPortal = () => {
     const [jobTypes, setJobTypes] = useState("");
     const [minSalary, setMinSalary] = useState("0"); // State for selected minimum base pay salary
     const [selectedRole, setSelectedRole] = useState(""); // State for selected role
+    const [companySearch, setCompanySearch] = useState(""); // State for company search
 
     useEffect(() => {
         fetchData({ limit, offset });
@@ -63,7 +64,7 @@ const JobPortal = () => {
                 }).filter(job => {
                     // Filtering based on minimum base pay salary
                     if (parseInt(params.minSalary) > 0) {
-                         const minSalary = parseInt(params.minSalary);
+                        const minSalary = parseInt(params.minSalary);
                         const jobMinSalary = parseInt(job.minJdSalary);
                         const jobMaxSalary = parseInt(job.maxJdSalary);
                 
@@ -75,6 +76,12 @@ const JobPortal = () => {
                     // Filtering based on selected role
                     if (params.selectedRole) {
                         return job.jobRole === params.selectedRole;
+                    }
+                    return true; // Return true for other cases
+                }).filter(job => {
+                    // Filtering based on company search
+                    if (params.companySearch) {
+                        return job.companyName.toLowerCase().includes(params.companySearch.toLowerCase());
                     }
                     return true; // Return true for other cases
                 });
@@ -90,7 +97,7 @@ const JobPortal = () => {
         setExperience(selectedExperience);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience: selectedExperience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole });
+        fetchData({ experience: selectedExperience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
     };
 
     const handleJobTypeChange = (event) => {
@@ -98,7 +105,7 @@ const JobPortal = () => {
         setJobTypes(selectedType);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience, jobTypes: selectedType, minSalary, limit, offset: initialOffset, selectedRole });
+        fetchData({ experience, jobTypes: selectedType, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
     };
 
     const handleMinSalaryChange = (event) => {
@@ -106,7 +113,7 @@ const JobPortal = () => {
         setMinSalary(selectedMinSalary);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary: selectedMinSalary, limit, offset: initialOffset, selectedRole });
+        fetchData({ experience, jobTypes, minSalary: selectedMinSalary, limit, offset: initialOffset, selectedRole, companySearch });
     };
 
     const handleRoleChange = (event) => {
@@ -114,13 +121,21 @@ const JobPortal = () => {
         setSelectedRole(selectedRole);
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole });
+        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
+    };
+
+    const handleCompanySearchChange = (event) => {
+        const searchValue = event.target.value;
+        setCompanySearch(searchValue);
+        setOffset(initialOffset);
+        setJobListings([]);
+        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch: searchValue });
     };
 
     const handleScroll = () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             setOffset(prevOffset => prevOffset + jobListings.length);
-            fetchData({ experience: parseInt(experience), jobTypes, minSalary, limit, offset, selectedRole });
+            fetchData({ experience: parseInt(experience), jobTypes, minSalary, limit, offset, selectedRole, companySearch });
         }
     };
 
@@ -134,7 +149,8 @@ const JobPortal = () => {
     return (
         <div>
             <div className="dropdown-container">
-            <select value={selectedRole} onChange={handleRoleChange}>
+               
+                <select value={selectedRole} onChange={handleRoleChange}>
                     <option value="">Select Role</option>
                     <optgroup label="ENGINEERING">
                         <option value="backend">Backend</option>
@@ -207,7 +223,12 @@ const JobPortal = () => {
                         <option key={i} value={i * 10}>${i * 10}</option>
                     ))}
                 </select>
-               
+                <input 
+                    type="text" 
+                    value={companySearch} 
+                    onChange={handleCompanySearchChange} 
+                    placeholder="Search for Company" 
+                />
             </div>
 
             <div id="jobListings" className="job-listings">
