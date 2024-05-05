@@ -1,5 +1,7 @@
 
-
+job-filters{
+  display: flex;
+}
 .dropdown-container select {
   margin-left: 70px;
   margin-top: 30px;
