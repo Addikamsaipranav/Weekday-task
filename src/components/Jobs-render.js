@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useMemo } from "react";
 import JobCard from "./JobCard";
 import "../css/jobcard.css";
 import "../css/filteration.css";
+import { API_URL } from "../utils/data";
 
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -13,129 +15,85 @@ const JobPortal = () => {
     const [jobListings, setJobListings] = useState([]);
     const [offset, setOffset] = useState(initialOffset);
     const [totalCount, setTotalCount] = useState(0);
-    const [experience, setExperience] = useState("0");
-    const [jobTypes, setJobTypes] = useState("");
-    const [minSalary, setMinSalary] = useState("0"); // State for selected minimum base pay salary
-    const [selectedRole, setSelectedRole] = useState(""); // State for selected role
-    const [companySearch, setCompanySearch] = useState(""); // State for company search
+    const [filters, setFilters] = useState({
+        experience: "0",
+        jobTypes: "",
+        minSalary: "0",
+        selectedRole: "",
+        companySearch: ""
+    });
 
     useEffect(() => {
         fetchData({ limit, offset });
     }, []);
 
     const fetchData = (params) => {
-        // Constructing the body of the request
+        console.log(params)
         const body = JSON.stringify(params);
-
-        // Setting up request options
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
             body
         };
 
-        // Fetching data from the API
-        fetch("https://api.weekday.technology/adhoc/getSampleJdJSON", requestOptions)
+        fetch(API_URL, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                // Updating total count
                 if (result.totalCount) {
                     setTotalCount(result.totalCount);
                 }
-
-                // Updating offset
                 setOffset(prevOffset => prevOffset + result.jdList.length);
-
-                // Filtering jobs based on parameters
-                let filteredJobs = result.jdList.filter(job => {
-                    // Filtering based on experience
-                    if (parseInt(params.experience) > 0) {
-                        return parseInt(job.minExp) <= parseInt(params.experience)
-                    }
-                    return true; // Return true for other cases
-                }).filter(job => {
-                    // Filtering based on job types
-                    if (params.jobTypes === "In-Office") {
-                        return job.location !== "hybrid" && job.location !== "remote";
-                    } else if (params.jobTypes === "remote" || params.jobTypes === "hybrid") {
-                        return job.location === params.jobTypes;
-                    }
-                    return true; // Return true for other cases
-                }).filter(job => {
-                    // Filtering based on minimum base pay salary
-                    if (parseInt(params.minSalary) > 0) {
-                        const minSalary = parseInt(params.minSalary);
-                        const jobMinSalary = parseInt(job.minJdSalary);
-                        const jobMaxSalary = parseInt(job.maxJdSalary);
-                
-                        // Check if the selected salary is within the range of min and max salary
-                        return minSalary >= jobMinSalary && minSalary <= jobMaxSalary || minSalary <= jobMinSalary && minSalary >= jobMaxSalary;
-                    }
-                    return true; // Return true for other cases
-                }).filter(job => {
-                    // Filtering based on selected role
-                    if (params.selectedRole) {
-                        return job.jobRole === params.selectedRole;
-                    }
-                    return true; // Return true for other cases
-                }).filter(job => {
-                    // Filtering based on company search
-                    if (params.companySearch) {
-                        return job.companyName.toLowerCase().includes(params.companySearch.toLowerCase());
-                    }
-                    return true; // Return true for other cases
-                });
-
-                // Updating job listings
-                setJobListings(prevListings => [...prevListings, ...filteredJobs]);
+                setJobListings(prevListings => [...prevListings, ...result.jdList]);
             })
             .catch((error) => console.error(error));
     };
 
-    const handleExperienceChange = (event) => {
-        const selectedExperience = event.target.value;
-        setExperience(selectedExperience);
+    const handleFilterChange = (event) => {
+        const { name, value } = event.target;
+        setFilters(prevFilters => ({ ...prevFilters, [name]: value }));
         setOffset(initialOffset);
         setJobListings([]);
-        fetchData({ experience: selectedExperience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
+        fetchData({ ...filters, [name]: value, offset: initialOffset });
     };
 
-    const handleJobTypeChange = (event) => {
-        const selectedType = event.target.value;
-        setJobTypes(selectedType);
-        setOffset(initialOffset);
-        setJobListings([]);
-        fetchData({ experience, jobTypes: selectedType, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
-    };
-
-    const handleMinSalaryChange = (event) => {
-        const selectedMinSalary = event.target.value;
-        setMinSalary(selectedMinSalary);
-        setOffset(initialOffset);
-        setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary: selectedMinSalary, limit, offset: initialOffset, selectedRole, companySearch });
-    };
-
-    const handleRoleChange = (event) => {
-        const selectedRole = event.target.value;
-        setSelectedRole(selectedRole);
-        setOffset(initialOffset);
-        setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch });
-    };
-
-    const handleCompanySearchChange = (event) => {
-        const searchValue = event.target.value;
-        setCompanySearch(searchValue);
-        setOffset(initialOffset);
-        setJobListings([]);
-        fetchData({ experience, jobTypes, minSalary, limit, offset: initialOffset, selectedRole, companySearch: searchValue });
-    };
+    const filteredJobs = useMemo(() => {
+        return jobListings.filter(job => {
+            if (parseInt(filters.experience) > 0) {
+                return parseInt(job.minExp) <= parseInt(filters.experience);
+            }
+            return true;
+        }).filter(job => {
+            if (filters.jobTypes === "In-Office") {
+                return job.location !== "hybrid" && job.location !== "remote";
+            } else if (filters.jobTypes === "remote" || filters.jobTypes === "hybrid") {
+                return job.location === filters.jobTypes;
+            }
+            return true;
+        }).filter(job => {
+            if (parseInt(filters.minSalary) > 0) {
+                const minSalary = parseInt(filters.minSalary);
+                const jobMinSalary = parseInt(job.minJdSalary);
+                const jobMaxSalary = parseInt(job.maxJdSalary);
+                return jobMinSalary >= minSalary || jobMaxSalary >= minSalary;
+            }
+            return true;
+        }).filter(job => {
+            if (filters.selectedRole) {
+                return job.jobRole === filters.selectedRole;
+            }
+            return true;
+        }).filter(job => {
+            if (filters.companySearch) {
+                return job.companyName.toLowerCase().includes(filters.companySearch.toLowerCase());
+            }
+            return true;
+        });
+    }, [jobListings, filters]);
 
     const handleScroll = () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             setOffset(prevOffset => prevOffset + jobListings.length);
-            fetchData({ experience: parseInt(experience), jobTypes, minSalary, limit, offset, selectedRole, companySearch });
+            fetchData({ ...filters, offset });
         }
     };
 
@@ -149,14 +107,8 @@ const JobPortal = () => {
     return (
         <div>
             <div className="dropdown-container">
-                <input 
-                    type="text" 
-                    value={companySearch} 
-                    onChange={handleCompanySearchChange} 
-                    placeholder="Search for Company" 
-                />
-                <select value={selectedRole} onChange={handleRoleChange}>
-                    <option value="">Select Role</option>
+                <select name="selectedRole" value={filters.selectedRole} onChange={handleFilterChange}>
+                <option value="">Select Role</option>
                     <optgroup label="ENGINEERING">
                         <option value="backend">Backend</option>
                         <option value="frontend">Frontend</option>
@@ -208,31 +160,36 @@ const JobPortal = () => {
                         <option value="businessanalyst">Business Analyst</option>
                     </optgroup>
                     
-                                    
                 </select>
-                <select value={experience} onChange={handleExperienceChange}>
-                    <option value="0">Experience</option>
+                <select name="experience" value={filters.experience} onChange={handleFilterChange}>
+                <option value="0">Experience</option>
                     {[...Array(10)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>{i + 1} years</option>
                     ))}
                 </select>
-                <select value={jobTypes} onChange={handleJobTypeChange}>
-                    <option value="0">Select Job Type</option>
+                <select name="jobTypes" value={filters.jobTypes} onChange={handleFilterChange}>
+                <option value="0">Select Job Type</option>
                     <option value="remote">Remote</option>
                     <option value="hybrid">Hybrid</option>
                     <option value="In-Office">In-Office</option>
                 </select>
-                <select value={minSalary} onChange={handleMinSalaryChange}>
-                    <option value="0">Minimum Base Pay Salary</option>
+                <select name="minSalary" value={filters.minSalary} onChange={handleFilterChange}>
+                <option value="0">Minimum Base Pay Salary</option>
                     {[...Array(11)].map((_, i) => (
                         <option key={i} value={i * 10}>${i * 10}</option>
                     ))}
                 </select>
-               
+                <input
+                    type="text"
+                    name="companySearch"
+                    value={filters.companySearch}
+                    onChange={handleFilterChange}
+                    placeholder="Search for Company"
+                />
             </div>
 
             <div id="jobListings" className="job-listings">
-                {jobListings.map((job, index) => (
+                {filteredJobs.map((job, index) => (
                     <JobCard
                         key={index}
                         companyName={job.companyName}

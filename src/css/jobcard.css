@@ -106,6 +106,9 @@
 /* Add media query for mobile responsiveness */
 @media screen and (max-width: 768px) {
   .job-card {
-    width: calc(50% - 20px);
+    width: calc(100% - 0px);
+  }
+  .job-card:not(:last-child) {
+    margin-right: 0px;
   }
 }
