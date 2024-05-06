@@ -9,35 +9,35 @@
   margin-left: 10px;
   margin-top: 30px;
   font-size: 16px;
-  width: inherit; /* Increase the width of the dropdown */
-  padding: 8px; /* Add padding to the dropdown */
-  border: 1px solid rgba(0, 0, 0, 0.3); /* Add border with ghost white color and opacity */
-  background-color: rgba(255, 255, 255, 0.6); /* Set background opacity */
-  border-radius: 4px; /* Add border-radius */
-  font-size: 16px; /* Set font size */
-  color: #333; /* Set text color */
-  outline: none; /* Remove outline */
-  cursor: pointer; /* Set cursor to pointer */
+  width: inherit;
+  padding: 8px; 
+  border: 1px solid rgba(0, 0, 0, 0.3); 
+  background-color: rgba(255, 255, 255, 0.6); 
+  border-radius: 4px;
+  font-size: 16px; 
+  color: #333; 
+  outline: none; 
+  cursor: pointer; 
 }
 
 .dropdown-container select optgroup {
-  opacity: 0.8; /* Set opacity for optgroup */
+  opacity: 0.8; 
 }
 
 .dropdown-container select option {
-  opacity: 0.1; /* Set opacity for options */
+  opacity: 0.1; 
  
  
 }
 
 .dropdown-container select option:first-child {
-  padding-top: 0; /* Remove top padding for the first option */
+  padding-top: 0; 
 }
 
 .dropdown-container select option {
-  background-color: rgba(255, 255, 255, 0.6); /* Set background opacity for options */
+  background-color: rgba(255, 255, 255, 0.6); 
 }
 
 .dropdown-container select:hover {
-  border: 2px solid blue; /* Add border when hovering over the container */
+  border: 2px solid blue; 
 }

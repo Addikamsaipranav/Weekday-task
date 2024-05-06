@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../css/jobcard.css'; // Import CSS file for styling
+import '../css/jobcard.css';
 
 const JobCard = ({ companyName, companyPhoto, jobTitle, location, estimatedSalary, aboutCompany, minExperience, easyApply, askForReferral }) => {
     const [showMore, setShowMore] = useState(false);
@@ -13,7 +13,11 @@ const JobCard = ({ companyName, companyPhoto, jobTitle, location, estimatedSalar
         return str.charAt(0).toUpperCase() + str.slice(1);
     };
 
-    // Function to calculate the percentage of characters to display in the aboutCompany section
+    // function to calculate the percentage of characters to display in the aboutCompany section
+    // this is the logic to get the blurry effect in the job card 
+    // firstly i have seprated 40%,55%,65% charcters from string
+    //for first 40% opacity is given as 0.8 and for next 15% opacity is given as 0.6 and next as 0.4
+    //thus we got the blurry effect
     const calculateDivContent = () => {
         const totalCharacters = aboutCompany.length;
         const fiftyPercent = Math.floor((totalCharacters * 40) / 100); // 50% of total characters

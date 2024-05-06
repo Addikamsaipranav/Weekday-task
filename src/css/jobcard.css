@@ -15,17 +15,17 @@
   width: calc(33.33% - 20px);
   margin-bottom: 20px;
   padding: 20px;
-  height: 100%; /* Set card height to 1000px */
-  box-sizing: border-box; /* Include padding in the card's width and height */
-  border: 1px solid ghostwhite; /* Set border to 2px */
+  height: 100%; 
+  box-sizing: border-box; 
+  border: 1px solid ghostwhite; 
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
   transition: box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 .job-card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  transform: translateY(-5px); /* Move the card 5px up on hover */
+  transform: translateY(-5px); 
 }
 .job-card:not(:last-child) {
   margin-right: 20px;
@@ -103,7 +103,7 @@
   border: 0px solid ghostwhite;
 }
 
-/* Add media query for mobile responsiveness */
+
 @media screen and (max-width: 768px) {
   .job-card {
     width: calc(100% - 0px);
